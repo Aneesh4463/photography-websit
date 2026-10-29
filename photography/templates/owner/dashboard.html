@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard | Studio Control</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cormorant Garamond (Serif) & Inter (Sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            400: '#d97706',
+                            500: '#b45309',
+                            600: '#92400e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-zinc-50 text-zinc-900 min-h-screen flex flex-col md:flex-row font-sans selection:bg-amber-100 selection:text-amber-900">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden flex items-center justify-between px-6 py-4 bg-white/90 backdrop-blur-md border-b border-zinc-200 sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-600 to-amber-300 p-[1px] shadow-sm">
+                <div class="w-full h-full bg-white rounded-full flex items-center justify-center text-amber-700">
+                    <i class="fa-solid fa-camera text-sm"></i>
+                </div>
+            </div>
+            <span class="font-serif font-bold text-xl tracking-wide text-zinc-900">LUMIÈRE</span>
+        </div>
+        <button id="mobileMenuBtn" class="p-2 rounded-xl text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 border border-zinc-200 transition">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="hidden md:flex flex-col w-full md:w-72 bg-white border-r border-zinc-200/80 p-6 shrink-0 min-h-screen justify-between shadow-sm">
+        <div>
+            <!-- Brand / Logo Header -->
+            <div class="flex items-center space-x-3.5 mb-10 px-2 pt-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 p-[1px] shadow-md shadow-amber-600/10">
+                    <div class="w-full h-full bg-white rounded-[11px] flex items-center justify-center text-amber-700">
+                        <i class="fa-solid fa-camera-retro text-lg"></i>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="font-serif font-bold text-xl tracking-wide text-zinc-900">STUDIO PANEL</h2>
+                    <p class="text-[11px] text-zinc-400 uppercase tracking-widest font-semibold">Owner Suite</p>
+                </div>
+            </div>
+
+            <!-- Main Navigation Links -->
+            <nav class="space-y-6">
+                <div>
+                    <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest px-3 mb-2.5">Core Overview</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'owner_enquiries' %}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-inbox text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                                <span class="text-sm font-medium">Customer Enquiries</span>
+                            </div>
+                            <span class="text-xs bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full font-semibold border border-amber-200">{{ total_enquiries }}</span>
+                        </a>
+
+                        <a href="{% url 'owner_reviews' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-star text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Customer Reviews</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest px-3 mb-2.5">Gallery & Portfolio</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'owner_portfolio' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-images text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Photo Gallery</span>
+                        </a>
+
+                        <a href="{% url 'owner_portfolio_upload' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-cloud-arrow-up text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Upload New Photo</span>
+                        </a>
+
+                        <a href="{% url 'owner_films' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-film text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Manage Films</span>
+                        </a>
+
+                        <a href="{% url 'owner_film_add' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-plus-square text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Add New Film</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest px-3 mb-2.5">Business & Offerings</p>
+                    <div class="space-y-1">
+                        <a href="{% url 'owner_packages' %}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-zinc-600 hover:bg-amber-50 hover:text-amber-900 transition group border border-transparent hover:border-amber-200/50">
+                            <i class="fa-solid fa-cubes text-zinc-400 group-hover:text-amber-600 text-sm w-5"></i>
+                            <span class="text-sm font-medium">Manage Packages</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Logout Action Button -->
+        <div class="pt-6 border-t border-zinc-200">
+            <form method="post" action="{% url 'owner_logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex items-center justify-center space-x-2.5 px-4 py-2.5 rounded-xl bg-zinc-50 hover:bg-red-50 hover:text-red-600 text-zinc-600 border border-zinc-200 hover:border-red-200 transition text-sm font-medium cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                    <span>Log Out</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+        <!-- Top Workspace Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-zinc-200">
+            <div>
+                <div class="flex items-center space-x-2 text-xs font-semibold text-amber-700 uppercase tracking-widest mb-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Studio Control Panel</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-zinc-900 tracking-wide">Owner Dashboard</h1>
+                <p class="text-zinc-500 text-sm mt-1">Manage client bookings, photography gallery, video films, and studio packages.</p>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'owner_portfolio_upload' %}" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-amber-700 text-white font-semibold text-sm shadow-lg shadow-zinc-900/10 transition">
+                    <i class="fa-solid fa-cloud-arrow-up text-xs text-amber-400"></i>
+                    <span>Upload New Photo</span>
+                </a>
+                <a href="{% url 'owner_film_add' %}" class="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 text-sm font-medium shadow-sm transition">
+                    <i class="fa-solid fa-video text-xs text-amber-600"></i>
+                    <span>Add New Film</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Key Metrics / Stats Section -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-xl font-serif font-bold text-zinc-900 flex items-center gap-2.5">
+                    <i class="fa-solid fa-chart-line text-amber-600 text-base"></i> Enquiry Analytics
+                </h2>
+                <a href="{% url 'owner_enquiries' %}" class="text-xs text-amber-700 hover:text-amber-900 font-semibold flex items-center gap-1 group">
+                    <span>View all enquiries</span>
+                    <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Total Enquiries -->
+                <div class="bg-white border border-zinc-200/90 p-5 rounded-2xl relative overflow-hidden group hover:border-amber-400/50 transition shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-zinc-500">Total Enquiries</p>
+                            <h3 class="text-3xl font-bold text-zinc-900 mt-2 font-sans">{{ total_enquiries }}</h3>
+                            <p class="text-[11px] text-zinc-400 mt-2">All client leads</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-inbox"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending -->
+                <div class="bg-white border border-zinc-200/90 p-5 rounded-2xl relative overflow-hidden group hover:border-amber-400/50 transition shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-amber-600">Pending</p>
+                            <h3 class="text-3xl font-bold text-zinc-900 mt-2 font-sans">{{ pending_enquiries }}</h3>
+                            <p class="text-[11px] text-zinc-400 mt-2">Awaiting action</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- In Progress -->
+                <div class="bg-white border border-zinc-200/90 p-5 rounded-2xl relative overflow-hidden group hover:border-sky-400/50 transition shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-sky-600">In Progress</p>
+                            <h3 class="text-3xl font-bold text-zinc-900 mt-2 font-sans">{{ in_progress_enquiries }}</h3>
+                            <p class="text-[11px] text-zinc-400 mt-2">Currently processing</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 border border-sky-200 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-arrows-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completed -->
+                <div class="bg-white border border-zinc-200/90 p-5 rounded-2xl relative overflow-hidden group hover:border-emerald-400/50 transition shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-emerald-600">Completed</p>
+                            <h3 class="text-3xl font-bold text-zinc-900 mt-2 font-sans">{{ completed_enquiries }}</h3>
+                            <p class="text-[11px] text-zinc-400 mt-2">Successfully finalized</p>
+                        </div>
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Management Sections Grid -->
+        <div>
+            <h2 class="text-xl font-serif font-bold text-zinc-900 mb-5 flex items-center gap-2.5">
+                <i class="fa-solid fa-sliders text-amber-600 text-base"></i> Website Management
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                
+                <!-- Enquiries Card -->
+                <a href="{% url 'owner_enquiries' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Customer Enquiries</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Review, respond to, and manage client inquiries.</p>
+                    </div>
+                </a>
+
+                <!-- Reviews Card -->
+                <a href="{% url 'owner_reviews' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Customer Reviews</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Manage ratings and client feedback displayed on site.</p>
+                    </div>
+                </a>
+
+                <!-- Photo Gallery Card -->
+                <a href="{% url 'owner_portfolio' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-images"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Photo Gallery</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Organize portfolio categories and active photo sets.</p>
+                    </div>
+                </a>
+
+                <!-- Upload Photo Card -->
+                <a href="{% url 'owner_portfolio_upload' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Upload New Photo</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Add new high-res photographs to the showcase gallery.</p>
+                    </div>
+                </a>
+
+                <!-- Manage Films Card -->
+                <a href="{% url 'owner_films' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Manage Films</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Organize wedding teasers and cinematography reels.</p>
+                    </div>
+                </a>
+
+                <!-- Add New Film Card -->
+                <a href="{% url 'owner_film_add' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Add New Film</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Publish new video embed links or upload video clips.</p>
+                    </div>
+                </a>
+
+                <!-- Packages Card -->
+                <a href="{% url 'owner_packages' %}" class="group p-6 rounded-2xl bg-white border border-zinc-200/90 hover:border-amber-400/80 hover:shadow-lg transition duration-200 flex flex-col justify-between h-44 lg:col-span-3 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-xl border border-amber-200 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <span class="text-zinc-400 group-hover:text-amber-700 transition-colors">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </span>
+                    </div>
+                    <div>
+                        <h3 class="font-serif font-bold text-lg text-zinc-900 group-hover:text-amber-800 transition-colors">Manage Photography Packages</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Update rates, feature lists, deliverables, and service options for clients.</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Drawer Menu Toggle Script -->
+    <script>
+        const btn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+
+        btn.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

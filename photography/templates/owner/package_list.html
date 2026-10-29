@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography Packages | Studio Control</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-4 md:p-10 selection:bg-amber-500/30 selection:text-amber-200">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <!-- Top Header & Back Navigation -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-800/80">
+            <div>
+                <a href="{% url 'owner_dashboard' %}" class="inline-flex items-center space-x-2 text-xs font-medium text-amber-400 hover:text-amber-300 transition mb-3 group">
+                    <i class="fa-solid fa-arrow-left text-[11px] group-hover:-translate-x-1 transition-transform"></i>
+                    <span>Back to Dashboard</span>
+                </a>
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-white tracking-wide">Photography Packages</h1>
+                <p class="text-zinc-400 text-sm mt-1">Manage pricing tiers, deliverables, special offers, and package visibility.</p>
+            </div>
+
+            <!-- Add New Package Button -->
+            <div>
+                <a href="{% url 'owner_package_add' %}" class="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold text-sm shadow-lg shadow-amber-500/15 transition">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Add New Package</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Packages Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for package in packages %}
+            <div class="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/90 rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between group hover:border-amber-500/40 transition duration-300">
+                
+                <div>
+                    <!-- Cover Image Container -->
+                    <div class="relative h-52 bg-zinc-950 overflow-hidden">
+                        {% if package.cover_image %}
+                            <img src="{{ package.cover_image.url }}" alt="{{ package.get_name_display }} package cover" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        {% else %}
+                            <div class="w-full h-full flex flex-col items-center justify-center text-zinc-700 bg-zinc-900">
+                                <i class="fa-solid fa-box-archive text-3xl mb-1 text-zinc-600"></i>
+                                <span class="text-xs text-zinc-500 font-medium">No cover image uploaded</span>
+                            </div>
+                        {% endif %}
+
+                        <!-- Active / Inactive Status Badge -->
+                        <div class="absolute top-3 right-3">
+                            {% if package.is_active %}
+                                <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span>Active</span>
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-zinc-800/80 text-zinc-400 border border-zinc-700 backdrop-blur-md">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+                                    <span>Inactive</span>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Package Details Content -->
+                    <div class="p-6 space-y-4">
+                        
+                        <!-- Title & Events Covered -->
+                        <div>
+                            <h2 class="font-serif font-bold text-2xl text-white tracking-wide">{{ package.get_name_display }}</h2>
+                            {% if package.events_covered %}
+                                <div class="flex items-center space-x-1.5 text-xs text-amber-400 font-medium mt-1">
+                                    <i class="fa-regular fa-calendar-check text-[11px]"></i>
+                                    <span>Events: {{ package.events_covered }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Package Includes Section -->
+                        <div class="space-y-1.5 pt-2 border-t border-zinc-800/80">
+                            <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Includes:</p>
+                            <div class="text-xs text-zinc-300 leading-relaxed font-normal bg-zinc-950/60 p-3.5 rounded-xl border border-zinc-800/80">
+                                {{ package.includes|linebreaksbr }}
+                            </div>
+                        </div>
+
+                        <!-- Special Offer Badge (Conditional) -->
+                        {% if package.special_offer %}
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3.5 space-y-1">
+                            <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-400">
+                                <i class="fa-solid fa-tag text-[11px]"></i>
+                                <span>Special Offer</span>
+                            </div>
+                            <div class="text-xs text-amber-200/90 leading-relaxed">
+                                {{ package.special_offer|linebreaksbr }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+                <!-- Card Footer Action Buttons -->
+                <div class="p-6 pt-0 mt-auto">
+                    <div class="grid grid-cols-2 gap-3 pt-4 border-t border-zinc-800/80">
+                        <a href="{% url 'owner_package_edit' package.pk %}" class="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-semibold transition border border-amber-500/20">
+                            <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                            <span>Edit</span>
+                        </a>
+
+                        <a href="{% url 'owner_package_delete' package.pk %}" class="flex items-center justify-center space-x-1.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold transition border border-red-500/20">
+                            <i class="fa-solid fa-trash-can text-[11px]"></i>
+                            <span>Delete</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% empty %}
+            <!-- Empty State -->
+            <div class="col-span-full py-16 text-center">
+                <div class="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 text-amber-400 flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                    <i class="fa-solid fa-box-archive"></i>
+                </div>
+                <h3 class="text-zinc-200 font-bold text-base font-serif">No Packages Found</h3>
+                <p class="text-zinc-500 text-xs mt-1">Get started by creating your first photography pricing tier.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+</html>

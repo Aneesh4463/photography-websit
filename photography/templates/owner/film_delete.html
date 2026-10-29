@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Wedding Film | Studio Control</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-4 md:p-10 selection:bg-red-500/30 selection:text-red-200 flex flex-col justify-center items-center">
+
+    <div class="max-w-md mx-auto w-full space-y-6">
+
+        <!-- Top Back Navigation -->
+        <div>
+            <a href="{% url 'owner_films' %}" class="inline-flex items-center space-x-2 text-xs font-medium text-zinc-400 hover:text-amber-400 transition group">
+                <i class="fa-solid fa-arrow-left text-[11px] group-hover:-translate-x-1 transition-transform"></i>
+                <span>Cancel & Return to Films</span>
+            </a>
+        </div>
+
+        <!-- Main Confirmation Card -->
+        <div class="bg-zinc-900/70 backdrop-blur-md border border-zinc-800/90 rounded-2xl shadow-2xl p-6 md:p-8 relative overflow-hidden text-center">
+            
+            <!-- Warning Icon Header -->
+            <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center text-2xl mx-auto mb-5 shadow-inner">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h1 class="text-2xl font-serif font-bold text-white tracking-wide">Delete Wedding Film?</h1>
+            <p class="text-zinc-400 text-xs mt-2 leading-relaxed">
+                This action is permanent and cannot be undone. You are about to remove this film from your public studio portfolio:
+            </p>
+
+            <!-- Film Item Card Preview -->
+            <div class="my-6 p-4 rounded-xl bg-zinc-950/80 border border-zinc-800/80 flex items-center space-x-3.5 text-left">
+                {% if film.cover_image %}
+                    <img src="{{ film.cover_image.url }}" alt="{{ film.title }}" class="w-14 h-14 rounded-lg object-cover shrink-0 border border-zinc-700/60">
+                {% else %}
+                    <div class="w-14 h-14 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400 shrink-0">
+                        <i class="fa-solid fa-film text-lg"></i>
+                    </div>
+                {% endif %}
+
+                <div class="overflow-hidden">
+                    <h3 class="font-serif font-bold text-base text-white truncate">{{ film.title }}</h3>
+                    {% if film.get_category_display %}
+                        <p class="text-[11px] text-amber-400/90 font-medium mt-0.5">{{ film.get_category_display }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Confirmation Action Form -->
+            <form method="post" class="space-y-3">
+                {% csrf_token %}
+
+                <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-xs shadow-lg shadow-red-600/20 transition cursor-pointer">
+                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                    <span>Yes, Delete Film</span>
+                </button>
+
+                <a href="{% url 'owner_films' %}" class="w-full block py-2.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold transition border border-zinc-700/50">
+                    Cancel
+                </a>
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

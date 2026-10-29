@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Enquiries | Studio Control</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-serif { font-family: 'Cinzel', serif; }
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #C5A059 0%, #E2C07D 50%, #B88E43 100%);
+        }
+        .gold-gradient-bg:hover {
+            background: linear-gradient(135deg, #D4AF37 0%, #EDC988 50%, #C59B4E 100%);
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-800 min-h-screen selection:bg-amber-100 selection:text-amber-900 relative">
+
+    <!-- Atmospheric White Studio Photography Background Image with Subtle Opacity -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=1920" 
+             alt="Studio Photography Background" 
+             class="w-full h-full object-cover opacity-15 filter blur-[3px]">
+        <div class="absolute inset-0 bg-white/90 backdrop-blur-sm"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto p-6 md:p-12 space-y-10">
+
+        <!-- Top Header & Navigation -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-amber-900/10">
+            <div>
+                <a href="{% url 'owner_dashboard' %}" class="inline-flex items-center space-x-2 text-xs font-semibold tracking-wider uppercase text-amber-800 hover:text-amber-950 transition mb-4 group bg-amber-50/80 backdrop-blur-md px-4 py-2 rounded-full border border-amber-900/10 shadow-2xs hover:shadow-sm">
+                    <i class="fa-solid fa-arrow-left text-[10px] group-hover:-translate-x-1 transition-transform text-amber-700"></i>
+                    <span>Return to Dashboard</span>
+                </a>
+                <div class="flex items-center space-x-3">
+                    <h1 class="text-3xl md:text-5xl font-serif font-bold text-slate-900 tracking-wide">Customer Enquiries</h1>
+                    <span class="bg-amber-100/80 text-amber-900 text-xs px-3 py-1 rounded-full font-medium border border-amber-200 flex items-center gap-1.5 hidden sm:inline-flex">
+                        <i class="fa-solid fa-camera text-[10px] text-amber-700"></i> Studio Desk
+                    </span>
+                </div>
+                <p class="text-slate-500 text-sm mt-2 font-light tracking-wide">Review incoming boutique photography requests, handle reservations, and curate client experiences.</p>
+            </div>
+
+            <!-- Search Input -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative w-full sm:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-700/50 text-xs"></i>
+                    <input type="text" id="searchInput" onkeyup="filterEnquiries()" placeholder="Search by name, email, or phone..." 
+                           class="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-white backdrop-blur-md border border-amber-900/15 text-slate-800 placeholder-slate-400 text-xs focus:outline-none focus:border-amber-600 shadow-xs transition">
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-3 pb-2">
+            <button onclick="filterStatus('all')" class="status-tab active px-5 py-2.5 rounded-full text-xs font-semibold gold-gradient-bg text-white shadow-md shadow-amber-900/10 transition cursor-pointer">
+                All Enquiries
+            </button>
+            <button onclick="filterStatus('pending')" class="status-tab px-5 py-2.5 rounded-full text-xs font-medium bg-white hover:bg-amber-50/50 text-slate-600 hover:text-slate-900 border border-amber-900/15 transition cursor-pointer shadow-2xs">
+                <i class="fa-solid fa-hourglass-half text-amber-600 mr-2"></i>Pending
+            </button>
+            <button onclick="filterStatus('in_progress')" class="status-tab px-5 py-2.5 rounded-full text-xs font-medium bg-white hover:bg-amber-50/50 text-slate-600 hover:text-slate-900 border border-amber-900/15 transition cursor-pointer shadow-2xs">
+                <i class="fa-solid fa-arrows-spin text-sky-600 mr-2"></i>In Progress
+            </button>
+            <button onclick="filterStatus('completed')" class="status-tab px-5 py-2.5 rounded-full text-xs font-medium bg-white hover:bg-amber-50/50 text-slate-600 hover:text-slate-900 border border-amber-900/15 transition cursor-pointer shadow-2xs">
+                <i class="fa-solid fa-circle-check text-emerald-600 mr-2"></i>Completed
+            </button>
+        </div>
+
+        <!-- Table Container Card -->
+        <div class="bg-white/90 backdrop-blur-2xl border border-amber-900/15 rounded-3xl shadow-xl shadow-slate-200/60 overflow-hidden">
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="enquiriesTable">
+
+                    <!-- Table Header -->
+                    <thead class="bg-amber-50/50 border-b border-amber-900/10 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                        <tr>
+                            <th class="py-5 px-6">Client & Portfolio</th>
+                            <th class="py-5 px-6">Category</th>
+                            <th class="py-5 px-6">Package Details</th>
+                            <th class="py-5 px-6">Event Date</th>
+                            <th class="py-5 px-6">Status</th>
+                            <th class="py-5 px-6">Received</th>
+                            <th class="py-5 px-6 text-right">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Table Body -->
+                    <tbody class="divide-y divide-amber-900/5 text-xs">
+                        {% for enquiry in enquiries %}
+                        <tr class="hover:bg-amber-50/40 transition-colors enquiry-row group" data-status="{{ enquiry.status }}">
+
+                            <!-- Customer Info & Photography Thumbnail -->
+                            <td class="py-5 px-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative shrink-0">
+                                        <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=120" 
+                                             alt="Studio session preview" 
+                                             class="w-12 h-12 rounded-2xl object-cover border border-amber-200 shadow-xs group-hover:scale-105 transition-transform duration-300">
+                                        <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-slate-900 text-amber-300 rounded-full font-serif font-bold text-[9px] flex items-center justify-center border border-white shadow-2xs">
+                                            {{ enquiry.name|slice:":1"|upper }}
+                                        </span>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="font-bold text-sm text-slate-900 font-name tracking-tight">{{ enquiry.name }}</div>
+                                        <div class="text-slate-500 flex items-center gap-1.5 font-email">
+                                            <i class="fa-regular fa-envelope text-[10px] text-amber-700/60"></i>
+                                            <a href="mailto:{{ enquiry.email }}" class="hover:text-amber-800 transition">{{ enquiry.email }}</a>
+                                        </div>
+                                        <div class="text-slate-500 flex items-center gap-1.5 font-phone">
+                                            <i class="fa-solid fa-phone text-[10px] text-amber-700/60"></i>
+                                            <a href="tel:{{ enquiry.phone }}" class="hover:text-amber-800 transition font-mono text-[11px]">{{ enquiry.phone }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Event Category -->
+                            <td class="py-5 px-6">
+                                <span class="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 font-medium border border-slate-200/80 inline-flex items-center gap-1.5 text-[11px]">
+                                    <i class="fa-solid fa-camera-retro text-amber-700 text-[10px]"></i>
+                                    {{ enquiry.get_category_display }}
+                                </span>
+                            </td>
+
+                            <!-- Package -->
+                            <td class="py-5 px-6">
+                                {% if enquiry.get_package_display %}
+                                    <span class="text-amber-900 font-semibold bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200/80 inline-block shadow-2xs">
+                                        {{ enquiry.get_package_display }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-slate-400 italic">Not selected</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Event Date -->
+                            <td class="py-5 px-6 text-slate-700">
+                                {% if enquiry.event_date %}
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fa-regular fa-calendar-days text-amber-600"></i>
+                                        <span class="font-medium text-slate-800">{{ enquiry.event_date }}</span>
+                                    </div>
+                                {% else %}
+                                    <span class="text-slate-400 italic">Not specified</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td class="py-5 px-6">
+                                {% if enquiry.status == 'pending' %}
+                                    <span class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        <span>Pending</span>
+                                    </span>
+                                {% elif enquiry.status == 'in_progress' %}
+                                    <span class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
+                                        <span>In Progress</span>
+                                    </span>
+                                {% elif enquiry.status == 'completed' %}
+                                    <span class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span>Completed</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Date Received -->
+                            <td class="py-5 px-6 text-slate-400 font-mono text-[11px]">
+                                {{ enquiry.created_at|date:"d M Y, h:i A" }}
+                            </td>
+
+                            <!-- Status Form Action -->
+                            <td class="py-5 px-6 text-right">
+                                <form method="POST" action="{% url 'update_enquiry_status' enquiry.id %}" class="flex items-center justify-end space-x-2">
+                                    {% csrf_token %}
+
+                                    <div class="relative">
+                                        <select name="status" class="bg-white border border-amber-900/20 rounded-xl px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-amber-600 transition cursor-pointer appearance-none pr-8 shadow-2xs">
+                                            <option value="pending" {% if enquiry.status == 'pending' %}selected{% endif %}>Pending</option>
+                                            <option value="in_progress" {% if enquiry.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                            <option value="completed" {% if enquiry.status == 'completed' %}selected{% endif %}>Completed</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[9px] text-amber-800/70 pointer-events-none"></i>
+                                    </div>
+
+                                    <button type="submit" title="Save Status" class="px-4 py-2 rounded-xl gold-gradient-bg text-white font-bold text-xs shadow-md shadow-amber-900/10 transition flex items-center space-x-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-check text-[10px]"></i>
+                                        <span>Save</span>
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="7" class="py-24 text-center">
+                                <div class="relative w-20 h-20 mx-auto mb-4">
+                                    <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=200" 
+                                         alt="No enquiries" 
+                                         class="w-full h-full object-cover rounded-2xl border border-amber-200 shadow-sm">
+                                    <div class="absolute inset-0 bg-white/30 rounded-2xl"></div>
+                                </div>
+                                <h3 class="text-slate-900 font-bold text-lg font-serif tracking-wide">No Enquiries Found</h3>
+                                <p class="text-slate-500 text-xs mt-1 max-w-sm mx-auto font-light">New luxury booking enquiries submitted by clients will appear in this workspace.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts for Search & Category Filter -->
+    <script>
+        function filterEnquiries() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll(".enquiry-row");
+
+            rows.forEach(row => {
+                const name = row.querySelector(".font-name") ? row.querySelector(".font-name").textContent.toLowerCase() : "";
+                const email = row.querySelector(".font-email") ? row.querySelector(".font-email").textContent.toLowerCase() : "";
+                const phone = row.querySelector(".font-phone") ? row.querySelector(".font-phone").textContent.toLowerCase() : "";
+
+                if (name.includes(input) || email.includes(input) || phone.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        function filterStatus(status) {
+            const rows = document.querySelectorAll(".enquiry-row");
+            const tabs = document.querySelectorAll(".status-tab");
+
+            tabs.forEach(tab => {
+                tab.classList.remove("gold-gradient-bg", "text-white", "shadow-md", "shadow-amber-900/10", "font-semibold");
+                tab.classList.add("bg-white", "text-slate-600", "border-amber-900/15", "font-medium");
+            });
+
+            event.currentTarget.classList.remove("bg-white", "text-slate-600", "border-amber-900/15", "font-medium");
+            event.currentTarget.classList.add("gold-gradient-bg", "text-white", "shadow-md", "shadow-amber-900/10", "font-semibold");
+
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

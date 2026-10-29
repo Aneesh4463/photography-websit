@@ -1,0 +1,1189 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070709">
+    <title>Owner Login | ANEE &amp; Photography</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: #070709;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #070709;
+            color: #fff;
+            min-height: 100vh;
+            min-height: 100dvh;
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:focus-visible,
+        a:focus-visible {
+            outline: 2px solid #facc15;
+            outline-offset: 4px;
+        }
+
+        .brand {
+            font-family: 'Cinzel', serif;
+        }
+
+        .heading {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* =========================================
+           FULL-SCREEN BACKGROUND SLIDESHOW
+        ========================================= */
+
+        .background-slideshow {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            background: #070709;
+            pointer-events: none;
+        }
+
+        .bg-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transform: scale(1.08);
+            transition:
+                opacity 1.5s ease-in-out,
+                transform 8s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: opacity, transform;
+        }
+
+        .bg-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .background-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(7, 7, 9, 0.76),
+                    rgba(7, 7, 9, 0.66) 45%,
+                    rgba(7, 7, 9, 0.91)
+                );
+            z-index: 2;
+        }
+
+        /* =========================================
+           GOLDEN AMBIENT LIGHT
+        ========================================= */
+
+        .lens-flare {
+            position: absolute;
+            width: min(500px, 90vw);
+            height: min(500px, 90vw);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(20px);
+        }
+
+        .lens-flare-one {
+            top: -220px;
+            left: -150px;
+            background: radial-gradient(
+                circle,
+                rgba(234, 179, 8, 0.16),
+                rgba(168, 85, 247, 0.035) 45%,
+                transparent 70%
+            );
+            animation: floatGlow 12s ease-in-out infinite alternate;
+        }
+
+        .lens-flare-two {
+            bottom: -250px;
+            right: -150px;
+            background: radial-gradient(
+                circle,
+                rgba(212, 175, 55, 0.16),
+                transparent 70%
+            );
+            animation: floatGlow 15s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes floatGlow {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(35px, 25px) scale(1.12);
+            }
+        }
+
+        /* =========================================
+           GOLDEN PARTICLES
+        ========================================= */
+
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* =========================================
+           RESPONSIVE PAGE LAYOUT
+        ========================================= */
+
+        .page-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 28px 20px;
+        }
+
+        .page-content main {
+            width: 100%;
+            max-width: 390px;
+            margin: auto;
+        }
+
+        .page-content header {
+            margin-bottom: 20px;
+        }
+
+        .logo-container {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 11px;
+        }
+
+        .aperture-logo {
+            width: 23px;
+            height: 23px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-container:hover .aperture-logo {
+            transform: rotate(120deg) scale(1.1);
+        }
+
+        /* =========================================
+           PREMIUM GLASS LOGIN CARD
+        ========================================= */
+
+        .login-card {
+            position: relative;
+            width: 100%;
+            padding: 27px 28px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: rgba(10, 10, 14, 0.76);
+            backdrop-filter: blur(22px) saturate(145%);
+            -webkit-backdrop-filter: blur(22px) saturate(145%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.48),
+                inset 0 1px 0 rgba(255, 255, 255, 0.055);
+            animation: cardReveal 0.8s ease-out both;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: -110px;
+            right: -110px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.07);
+            filter: blur(45px);
+            pointer-events: none;
+        }
+
+        .login-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-intro {
+            margin-bottom: 22px;
+        }
+
+        .login-title {
+            font-size: clamp(29px, 4vw, 35px);
+            line-height: 1.2;
+        }
+
+        .login-description {
+            line-height: 1.7;
+        }
+
+        /* =========================================
+           DJANGO FORM STYLING
+        ========================================= */
+
+        .login-form {
+            width: 100%;
+        }
+
+        .login-form p {
+            position: relative;
+            margin: 0 0 16px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d6d3d1;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .login-form input {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            min-height: 44px;
+            padding: 11px 13px;
+            color: #f8fafc;
+            background: rgba(2, 6, 23, 0.82);
+            border: 1px solid #334155;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+        }
+
+        .login-form input:hover {
+            border-color: #64748b;
+        }
+
+        .login-form input:focus {
+            background: rgba(2, 6, 23, 0.96);
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.11);
+        }
+
+        .login-form input::placeholder {
+            color: #64748b;
+        }
+
+        .login-form ul,
+        .login-form .errorlist {
+            color: #fca5a5;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-top: 6px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .login-form .helptext {
+            display: block;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.6;
+            margin-top: 6px;
+        }
+
+        .form-errors {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 17px;
+            padding: 11px 13px;
+            border: 1px solid rgba(239, 68, 68, 0.32);
+            border-radius: 9px;
+            background: rgba(127, 29, 29, 0.24);
+            color: #fecaca;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .form-errors ul {
+            margin: 0;
+            padding-left: 16px;
+        }
+
+        /* =========================================
+           SIGN-IN BUTTON
+        ========================================= */
+
+        .sign-in-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 47px;
+            margin-top: 5px;
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: linear-gradient(110deg, #f5ca52, #d4af37 55%, #f5d56d);
+            color: #11100b;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition:
+                filter 0.25s ease,
+                transform 0.25s ease,
+                opacity 0.25s ease;
+        }
+
+        .sign-in-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -130%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(
+                110deg,
+                transparent,
+                rgba(255, 255, 255, 0.38),
+                transparent
+            );
+            transform: skewX(-20deg);
+            transition: left 0.7s ease;
+        }
+
+        .sign-in-button:hover {
+            filter: brightness(1.08);
+        }
+
+        .sign-in-button:hover::before {
+            left: 150%;
+        }
+
+        .sign-in-button:active {
+            transform: scale(0.99);
+        }
+
+        .sign-in-button:disabled {
+            cursor: wait;
+            opacity: 0.75;
+        }
+
+        /* =========================================
+           HOMEPAGE LINK AND FOOTER
+        ========================================= */
+
+        .home-link-area {
+            margin-top: 21px;
+            padding-top: 17px;
+            border-top: 1px solid rgba(71, 85, 105, 0.65);
+            text-align: center;
+        }
+
+        .home-link {
+            display: inline-block;
+            padding: 5px;
+            color: #94a3b8;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            line-height: 1.6;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: color 0.25s ease;
+        }
+
+        .home-link:hover {
+            color: #facc15;
+        }
+
+        .background-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 11px;
+            margin-top: 17px;
+        }
+
+        .slide-label {
+            color: #94a3b8;
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .slide-indicator {
+            flex: 0 0 auto;
+            width: 7px;
+            height: 7px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: #475569;
+            cursor: pointer;
+            transition:
+                background 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.25s ease;
+        }
+
+        .slide-indicator.active {
+            background: #facc15;
+            box-shadow: 0 0 11px rgba(250, 204, 21, 0.55);
+            transform: scale(1.25);
+        }
+
+        .slide-indicator:hover {
+            background: #facc15;
+        }
+
+        .page-footer {
+            margin-top: 16px;
+            padding-bottom: 2px;
+            color: #94a3b8;
+            font-size: 9px;
+            line-height: 1.7;
+            letter-spacing: 1.1px;
+            text-align: center;
+        }
+
+        /* =========================================
+           CAMERA SHUTTER TRANSITION
+        ========================================= */
+
+        .shutter-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            pointer-events: none;
+            visibility: hidden;
+        }
+
+        .shutter-blade {
+            position: absolute;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 50%;
+            background: #050507;
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .shutter-blade-top {
+            top: 0;
+            transform: translateY(-100%);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .shutter-blade-bottom {
+            bottom: 0;
+            transform: translateY(100%);
+            border-top: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .shutter-overlay.active {
+            visibility: visible;
+        }
+
+        .shutter-overlay.active .shutter-blade-top,
+        .shutter-overlay.active .shutter-blade-bottom {
+            transform: translateY(0);
+        }
+
+        /* =========================================
+           TABLET
+        ========================================= */
+
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 25px 18px;
+            }
+
+            .page-content main {
+                max-width: 370px;
+            }
+
+            .login-card {
+                padding: 25px 24px;
+            }
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 480px) {
+            .page-content {
+                padding: 22px 15px;
+            }
+
+            .page-content main {
+                max-width: 360px;
+            }
+
+            .page-content header {
+                margin-bottom: 17px;
+            }
+
+            .logo-container {
+                width: 42px;
+                height: 42px;
+                margin-bottom: 9px;
+            }
+
+            .aperture-logo {
+                width: 21px;
+                height: 21px;
+            }
+
+            .page-brand-title {
+                font-size: 19px;
+                letter-spacing: 0.13em;
+            }
+
+            .page-brand-subtitle {
+                font-size: 9px;
+                letter-spacing: 0.19em;
+            }
+
+            .login-card {
+                padding: 23px 19px;
+                border-radius: 18px;
+            }
+
+            .login-intro {
+                margin-bottom: 20px;
+            }
+
+            .login-title {
+                font-size: 30px;
+            }
+
+            .login-description {
+                font-size: 11px;
+            }
+
+            .login-form p {
+                margin-bottom: 15px;
+            }
+
+            .login-form label {
+                font-size: 9px;
+                letter-spacing: 1.5px;
+            }
+
+            .login-form input {
+                min-height: 43px;
+                padding: 11px;
+                font-size: 16px;
+            }
+
+            .sign-in-button {
+                min-height: 46px;
+                font-size: 10px;
+            }
+
+            .home-link-area {
+                margin-top: 18px;
+                padding-top: 15px;
+            }
+
+            .background-controls {
+                gap: 12px;
+                margin-top: 15px;
+            }
+
+            .page-footer {
+                margin-top: 13px;
+                font-size: 8px;
+            }
+
+            .lens-flare {
+                filter: blur(35px);
+            }
+        }
+
+        /* =========================================
+           VERY SMALL PHONES
+        ========================================= */
+
+        @media (max-width: 340px) {
+            .page-content {
+                padding: 18px 11px;
+            }
+
+            .page-brand-title {
+                font-size: 17px;
+                letter-spacing: 0.1em;
+            }
+
+            .page-brand-subtitle {
+                font-size: 8px;
+                letter-spacing: 0.14em;
+            }
+
+            .login-card {
+                padding: 21px 15px;
+            }
+
+            .login-title {
+                font-size: 27px;
+            }
+
+            .background-controls {
+                gap: 9px;
+            }
+        }
+
+        /* =========================================
+           SHORT WINDOWS AND LAPTOP SCREENS
+        ========================================= */
+
+        @media (max-height: 760px) {
+            .page-content {
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
+
+            .page-content header {
+                margin-bottom: 13px;
+            }
+
+            .logo-container {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 7px;
+            }
+
+            .aperture-logo {
+                width: 21px;
+                height: 21px;
+            }
+
+            .login-card {
+                padding-top: 21px;
+                padding-bottom: 21px;
+            }
+
+            .login-intro {
+                margin-bottom: 17px;
+            }
+
+            .login-form p {
+                margin-bottom: 12px;
+            }
+
+            .login-form input {
+                min-height: 40px;
+                padding-top: 9px;
+                padding-bottom: 9px;
+            }
+
+            .sign-in-button {
+                min-height: 43px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .home-link-area {
+                margin-top: 15px;
+                padding-top: 12px;
+            }
+
+            .background-controls {
+                margin-top: 12px;
+            }
+
+            .page-footer {
+                margin-top: 10px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .page-content {
+                align-items: flex-start;
+            }
+
+            .page-content main {
+                margin-top: auto;
+                margin-bottom: auto;
+            }
+        }
+
+        /* =========================================
+           REDUCED MOTION ACCESSIBILITY
+        ========================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- FULL-SCREEN BACKGROUND -->
+    <div class="background-slideshow" aria-hidden="true">
+
+        <div class="bg-slide active"
+             style="background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="bg-slide"
+             style="background-image: url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="bg-slide"
+             style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="bg-slide"
+             style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=85');">
+        </div>
+
+        <div class="lens-flare lens-flare-one"></div>
+        <div class="lens-flare lens-flare-two"></div>
+
+        <div class="background-overlay"></div>
+    </div>
+
+    <!-- GOLDEN PARTICLES -->
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+    <!-- CAMERA SHUTTER -->
+    <div id="shutter" class="shutter-overlay" aria-hidden="true">
+        <div class="shutter-blade shutter-blade-top">
+            <span class="brand text-xs tracking-[0.4em] text-amber-400 opacity-70">
+                SHUTTER CAPTURE
+            </span>
+        </div>
+
+        <div class="shutter-blade shutter-blade-bottom">
+            <span class="brand text-xs tracking-[0.4em] text-amber-400 opacity-70">
+                Anee &amp; Photography
+            </span>
+        </div>
+    </div>
+
+    <!-- RESPONSIVE LOGIN CONTENT -->
+    <div class="page-content">
+
+        <main>
+
+            <!-- STUDIO BRANDING -->
+            <header class="text-center">
+
+                <div class="logo-container mx-auto flex items-center justify-center rounded-full border border-amber-400/50 text-amber-400 bg-slate-950/40 backdrop-blur-md">
+                    <svg class="aperture-logo" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1.5"
+                         aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+                        <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+                        <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+                        <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+                        <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+                        <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+                    </svg>
+                </div>
+
+                <h1 class="brand page-brand-title text-xl sm:text-2xl tracking-[0.18em] font-semibold">
+                    ANEE <span class="text-amber-400">&amp;</span> PHOTOGRAPHY
+                </h1>
+
+                <p class="page-brand-subtitle mt-2 text-[10px] tracking-[0.3em] uppercase text-slate-400">
+                    Private Studio Administration
+                </p>
+
+            </header>
+
+            <!-- LOGIN CARD -->
+            <section class="login-card">
+
+                <div class="login-intro text-center">
+
+                    <p class="text-amber-400 text-xs tracking-[0.25em] uppercase mb-3">
+                        Owner Access
+                    </p>
+
+                    <h2 class="heading login-title italic">
+                        Welcome Back
+                    </h2>
+
+                    <p class="login-description text-xs text-slate-400 mt-3">
+                        Sign in to manage your photography portfolio.
+                    </p>
+
+                </div>
+
+                <!-- DJANGO AUTHENTICATION ERRORS -->
+                {% if form.non_field_errors %}
+                    <div class="form-errors" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- REAL DJANGO LOGIN FORM -->
+                <form method="post" class="login-form" id="owner-login-form">
+                    {% csrf_token %}
+
+                    {{ form.as_p }}
+
+                    <button
+                        type="submit"
+                        id="sign-in-button"
+                        class="sign-in-button">
+
+                        <span id="sign-in-label">
+                            Sign In &rarr;
+                        </span>
+
+                    </button>
+                </form>
+
+                <!-- HOMEPAGE LINK -->
+                <div class="home-link-area">
+                    <a href="{% url 'home' %}" class="home-link">
+                        &larr; Back To Homepage
+                    </a>
+                </div>
+
+                <!-- BACKGROUND IMAGE CONTROLS -->
+                <div class="background-controls">
+                    <span class="slide-label">Background</span>
+
+                    <button type="button"
+                            class="slide-indicator active"
+                            data-slide="0"
+                            aria-label="Show background image 1"
+                            aria-pressed="true">
+                    </button>
+
+                    <button type="button"
+                            class="slide-indicator"
+                            data-slide="1"
+                            aria-label="Show background image 2"
+                            aria-pressed="false">
+                    </button>
+
+                    <button type="button"
+                            class="slide-indicator"
+                            data-slide="2"
+                            aria-label="Show background image 3"
+                            aria-pressed="false">
+                    </button>
+
+                    <button type="button"
+                            class="slide-indicator"
+                            data-slide="3"
+                            aria-label="Show background image 4"
+                            aria-pressed="false">
+                    </button>
+                </div>
+
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="page-footer">
+                &copy; 2026 ANEE &amp; PHOTOGRAPHY STUDIO
+            </footer>
+
+        </main>
+
+    </div>
+
+    <script>
+        /* =========================================
+           1. BACKGROUND SLIDESHOW
+        ========================================= */
+
+        const slides = document.querySelectorAll('.bg-slide');
+        const indicators = document.querySelectorAll('.slide-indicator');
+
+        let currentSlide = 0;
+        let slideshowTimer = null;
+
+        const reducedMotion = window.matchMedia(
+            '(prefers-reduced-motion: reduce)'
+        ).matches;
+
+        function changeBackground(index) {
+            if (index < 0 || index >= slides.length) {
+                return;
+            }
+
+            slides[currentSlide].classList.remove('active');
+            indicators[currentSlide].classList.remove('active');
+            indicators[currentSlide].setAttribute('aria-pressed', 'false');
+
+            currentSlide = index;
+
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+            indicators[currentSlide].setAttribute('aria-pressed', 'true');
+        }
+
+        function startSlideshow() {
+            clearInterval(slideshowTimer);
+
+            if (reducedMotion || slides.length < 2) {
+                return;
+            }
+
+            slideshowTimer = setInterval(function () {
+                const nextSlide = (currentSlide + 1) % slides.length;
+                changeBackground(nextSlide);
+            }, 2000);
+        }
+
+        indicators.forEach(function (indicator) {
+            indicator.addEventListener('click', function () {
+                const index = Number(this.dataset.slide);
+
+                changeBackground(index);
+                startSlideshow();
+            });
+        });
+
+        startSlideshow();
+
+
+        /* =========================================
+           2. GOLDEN FLOATING PARTICLES
+        ========================================= */
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        let animationFrame = null;
+        let canvasWidth = 0;
+        let canvasHeight = 0;
+
+        function resizeCanvas() {
+            const pixelRatio = Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
+
+            canvasWidth = window.innerWidth;
+            canvasHeight = window.innerHeight;
+
+            canvas.width = Math.round(canvasWidth * pixelRatio);
+            canvas.height = Math.round(canvasHeight * pixelRatio);
+
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvasWidth;
+                this.y = Math.random() * canvasHeight;
+                this.size = Math.random() * 1.3 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.alpha = Math.random() * 0.4 + 0.15;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvasWidth) {
+                    this.speedX *= -1;
+                }
+
+                if (this.y < 0 || this.y > canvasHeight) {
+                    this.speedY *= -1;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(250, 204, 21, ${this.alpha})`;
+
+                ctx.beginPath();
+                ctx.arc(
+                    this.x,
+                    this.y,
+                    this.size,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+        }
+
+        function createParticles() {
+            const particleCount = window.innerWidth < 600 ? 18 : 38;
+
+            particles = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            particles.forEach(function (particle) {
+                particle.update();
+                particle.draw();
+            });
+
+            animationFrame = requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        createParticles();
+
+        if (!reducedMotion) {
+            animateParticles();
+        }
+
+        window.addEventListener('resize', function () {
+            resizeCanvas();
+            createParticles();
+        });
+
+
+        /* =========================================
+           3. REAL DJANGO FORM SUBMISSION
+        ========================================= */
+
+        const loginForm = document.getElementById('owner-login-form');
+        const shutter = document.getElementById('shutter');
+        const submitButton = document.getElementById('sign-in-button');
+        const submitLabel = document.getElementById('sign-in-label');
+
+        let isSubmitting = false;
+
+        loginForm.addEventListener('submit', function (event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+
+            /*
+             * Keep the browser's native validation.
+             * If required fields are invalid, the browser
+             * stops submission before this event fires.
+             */
+            event.preventDefault();
+
+            isSubmitting = true;
+
+            submitButton.disabled = true;
+            submitLabel.textContent = 'Signing In...';
+
+            if (!reducedMotion) {
+                shutter.classList.add('active');
+            }
+
+            /*
+             * Submit the actual Django form.
+             * This does not fake a successful login.
+             */
+            setTimeout(function () {
+                HTMLFormElement.prototype.submit.call(loginForm);
+            }, reducedMotion ? 0 : 450);
+        });
+
+
+        /* =========================================
+           4. STOP ANIMATIONS WHEN PAGE IS HIDDEN
+        ========================================= */
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                clearInterval(slideshowTimer);
+
+                if (animationFrame !== null) {
+                    cancelAnimationFrame(animationFrame);
+                    animationFrame = null;
+                }
+            } else {
+                startSlideshow();
+
+                if (!reducedMotion && animationFrame === null) {
+                    animateParticles();
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

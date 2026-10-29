@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Reviews | Studio Control</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+    </style>
+</head>
+
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-4 md:p-10 selection:bg-amber-500/30 selection:text-amber-200">
+
+<div class="max-w-5xl mx-auto space-y-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-800/80">
+        <div>
+            <a href="{% url 'owner_dashboard' %}"
+               class="inline-flex items-center gap-2 text-xs font-medium text-amber-400 hover:text-amber-300 transition mb-3 group">
+                <i class="fa-solid fa-arrow-left text-[11px] group-hover:-translate-x-1 transition-transform"></i>
+                <span>Back to Dashboard</span>
+            </a>
+
+            <h1 class="text-3xl md:text-4xl font-serif font-bold text-white tracking-wide">
+                Manage Customer Reviews
+            </h1>
+
+            <p class="text-zinc-400 text-sm mt-1">
+                Approve customer feedback or remove reviews that are already approved.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- PENDING REVIEWS -->
+    <section class="space-y-5">
+
+        <div class="flex items-center justify-between gap-4">
+            <h2 class="text-2xl font-serif font-bold text-white">
+                Pending Reviews
+            </h2>
+
+            <span class="px-3 py-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">
+                <i class="fa-solid fa-hourglass-half mr-1"></i>
+                {{ pending_reviews|length }} Pending
+            </span>
+        </div>
+
+        <div class="space-y-4">
+
+            {% for review in pending_reviews %}
+
+            <div class="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/90 rounded-2xl p-6 shadow-xl hover:border-amber-500/30 transition duration-300">
+
+                <!-- Customer Details -->
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-4 border-b border-zinc-800/60">
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500/20 to-amber-200/10 border border-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-lg shrink-0">
+                            {{ review.customer_name|slice:":1"|upper }}
+                        </div>
+
+                        <div class="space-y-1">
+                            <h3 class="font-serif font-bold text-xl text-white">
+                                {{ review.customer_name }}
+                            </h3>
+
+                            {% if review.place %}
+                            <p class="text-zinc-400 text-xs">
+                                <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>
+                                {{ review.place }}
+                            </p>
+                            {% endif %}
+
+                            <p class="text-zinc-500 font-mono text-[11px]">
+                                <i class="fa-regular fa-clock mr-1"></i>
+                                {{ review.created_at }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-zinc-950/80 px-3 py-1.5 rounded-xl border border-zinc-800 self-start">
+                        <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                        <span class="text-xs font-bold text-white">
+                            {{ review.rating }}/5
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Review Content -->
+                <div class="py-4">
+                    <p class="text-sm text-zinc-300 leading-relaxed italic bg-zinc-950/40 p-4 rounded-xl border border-zinc-800/60">
+                        "{{ review.comment }}"
+                    </p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+
+                    <span class="inline-flex items-center gap-2 text-xs text-amber-400 font-medium">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        Pending Approval
+                    </span>
+
+                    <form method="POST" action="{% url 'approve_review' review.id %}">
+                        {% csrf_token %}
+
+                        <button type="submit"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 transition">
+                            <i class="fa-solid fa-check text-[11px]"></i>
+                            Approve Review
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="py-10 text-center bg-zinc-900/60 border border-zinc-800/90 rounded-2xl">
+                <i class="fa-regular fa-circle-check text-3xl text-emerald-400 mb-3"></i>
+                <h3 class="text-white font-serif font-bold text-lg">
+                    No Pending Reviews
+                </h3>
+                <p class="text-zinc-500 text-xs mt-1">
+                    All submitted reviews have been reviewed.
+                </p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </section>
+
+
+    <!-- APPROVED REVIEWS -->
+    <section class="space-y-5">
+
+        <div class="flex items-center justify-between gap-4">
+            <h2 class="text-2xl font-serif font-bold text-white">
+                Approved Reviews
+            </h2>
+
+            <span class="px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
+                <i class="fa-solid fa-check-circle mr-1"></i>
+                {{ approved_reviews|length }} Approved
+            </span>
+        </div>
+
+        <div class="space-y-4">
+
+            {% for review in approved_reviews %}
+
+            <div class="bg-zinc-900/60 backdrop-blur-md border border-zinc-800/90 rounded-2xl p-6 shadow-xl hover:border-emerald-500/30 transition duration-300">
+
+                <!-- Customer Details -->
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-4 border-b border-zinc-800/60">
+
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-emerald-200/10 border border-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-lg shrink-0">
+                            {{ review.customer_name|slice:":1"|upper }}
+                        </div>
+
+                        <div class="space-y-1">
+                            <h3 class="font-serif font-bold text-xl text-white">
+                                {{ review.customer_name }}
+                            </h3>
+
+                            {% if review.place %}
+                            <p class="text-zinc-400 text-xs">
+                                <i class="fa-solid fa-location-dot text-amber-400 mr-1"></i>
+                                {{ review.place }}
+                            </p>
+                            {% endif %}
+
+                            <p class="text-zinc-500 font-mono text-[11px]">
+                                <i class="fa-regular fa-clock mr-1"></i>
+                                {{ review.created_at }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-zinc-950/80 px-3 py-1.5 rounded-xl border border-zinc-800 self-start">
+                        <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                        <span class="text-xs font-bold text-white">
+                            {{ review.rating }}/5
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Review Content -->
+                <div class="py-4">
+                    <p class="text-sm text-zinc-300 leading-relaxed italic bg-zinc-950/40 p-4 rounded-xl border border-zinc-800/60">
+                        "{{ review.comment }}"
+                    </p>
+                </div>
+
+                <!-- Approved Status and Delete Action -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+
+                    <span class="inline-flex items-center gap-2 text-xs text-emerald-400 font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        Approved and Published
+                    </span>
+
+                    <a href="{% url 'owner_review_delete' review.id %}"
+                       class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 font-bold text-xs transition">
+                        <i class="fa-solid fa-trash text-[11px]"></i>
+                        Delete Review
+                    </a>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="py-10 text-center bg-zinc-900/60 border border-zinc-800/90 rounded-2xl">
+                <i class="fa-regular fa-star text-3xl text-zinc-600 mb-3"></i>
+                <h3 class="text-white font-serif font-bold text-lg">
+                    No Approved Reviews
+                </h3>
+                <p class="text-zinc-500 text-xs mt-1">
+                    Approved reviews will appear here.
+                </p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>

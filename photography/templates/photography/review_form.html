@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Experience | Photography Studio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: #fcfbf7; /* Warm Ivory canvas */
+        }
+        .font-serif { 
+            font-family: 'Cormorant Garamond', serif; 
+        }
+
+        /* Classical Input & Form Field Styling for Django {{ form.as_p }} */
+        form p {
+            margin-bottom: 1.5rem;
+        }
+        form label {
+            display: block;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: #27272a;
+            margin-bottom: 0.4rem;
+        }
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 0.5rem;
+            padding: 0.85rem 1.1rem;
+            color: #18181b;
+            font-size: 0.875rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none;
+            border-color: #b45309; /* Warm Amber / Gold border */
+            box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+        }
+        form textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+        form .helptext {
+            display: block;
+            font-size: 0.75rem;
+            color: #71717a;
+            margin-top: 0.35rem;
+        }
+        form ul.errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0.35rem 0 0 0;
+            color: #dc2626;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body class="text-zinc-800 min-h-screen p-4 md:p-12 flex flex-col justify-center items-center selection:bg-amber-100 selection:text-amber-900">
+
+    <div class="max-w-xl mx-auto w-full space-y-6">
+
+        <!-- Top Navigation Link -->
+        <div class="text-center md:text-left">
+            <a href="{% url 'home' %}" class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-widest text-amber-800 hover:text-amber-900 transition group">
+                <i class="fa-solid fa-arrow-left text-[10px] group-hover:-translate-x-1 transition-transform"></i>
+                <span>Return to Home</span>
+            </a>
+        </div>
+
+        <!-- Main Card Container -->
+        <div class="bg-white border border-stone-200/80 rounded-2xl shadow-xl shadow-stone-200/50 p-8 md:p-12 relative overflow-hidden">
+            
+            <!-- Subtle Gold Top Decorative Accent Bar -->
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-200 via-amber-600 to-amber-200"></div>
+
+            <!-- Header Section -->
+            <div class="text-center pb-8 mb-8 border-b border-stone-100">
+                <div class="w-14 h-14 rounded-full bg-stone-50 border border-amber-500/30 text-amber-700 flex items-center justify-center text-xl mx-auto mb-4 shadow-sm">
+                    <i class="fa-regular fa-star"></i>
+                </div>
+
+                <span class="text-[10px] font-bold uppercase tracking-[0.25em] text-amber-800/80 block mb-1">Client Feedback</span>
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">Share Your Experience</h1>
+                <p class="text-stone-500 text-xs mt-2 italic font-serif text-base">"Capturing moments today, preserving memories for a lifetime."</p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+
+                <!-- Rendered Django Form Fields -->
+                <div class="space-y-4">
+                    {{ form.as_p }}
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="pt-6 mt-8 border-t border-stone-100 space-y-3">
+                    <button type="submit" class="w-full inline-flex items-center justify-center space-x-2 px-8 py-3.5 rounded-xl bg-stone-900 hover:bg-amber-900 text-amber-100 font-semibold text-xs tracking-widest uppercase shadow-md transition-all duration-300 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane text-[11px]"></i>
+                        <span>Submit Review</span>
+                    </button>
+
+                    <a href="{% url 'home' %}" class="w-full block py-3 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-600 text-xs font-medium uppercase tracking-wider text-center transition border border-stone-200">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+            <!-- Card Footer Badge -->
+            <div class="mt-8 text-center border-t border-stone-100 pt-4">
+                <p class="text-[10px] text-stone-400 uppercase tracking-widest">
+                    <i class="fa-solid fa-shield-halved text-amber-700/60 mr-1"></i> Studio Moderated Feedback
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
